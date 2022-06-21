@@ -1,6 +1,7 @@
 import threading
 import time
 import psutil
+import os
 
 
 class HardwareMonitor:
@@ -10,8 +11,21 @@ class HardwareMonitor:
         main_window.closeEvent = self.exit_app
 
     def set_cpu_usage(self):
-        usage = psutil.cpu_percent(interval=1)
-        self.ui_object.usage.setText(f'Usage: {usage}%')
+        try:
+            usage = psutil.cpu_percent(interval=1)
+            self.ui_object.cpu_usage.setText(f'Usage: {usage}%')
+
+        except:
+            pass
+
+    def set_cpu_speed(self):
+        try:
+            speed = os.system()
+            print(speed)
+            self.ui_object.cpu_speed.setText(f'Speed: {speed} MHz')
+
+        except:
+            pass
 
     def exit_app(self, e):
         self.active = False
@@ -19,7 +33,13 @@ class HardwareMonitor:
     def monitor(self):
         while self.active:
             try:
-                self.set_cpu_usage()
+                threading.Thread(target=self.set_cpu_usage).start()
+
+            except:
+                pass
+
+            try:
+                threading.Thread(target=self.set_cpu_speed).start()
 
             except:
                 pass
