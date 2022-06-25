@@ -3,7 +3,6 @@ import time
 import psutil
 import subprocess
 
-
 class CPU:
     def __init__(self, ui):
         self.ui_object = ui
@@ -26,7 +25,7 @@ class CPU:
 
         speed = max_clock_speed * freq_percent
 
-        return speed
+        return round(speed, 2)
 
     def set_cpu_usage(self):
         try:
@@ -45,12 +44,10 @@ class CPU:
             pass
 
     def get_cpu_utilization(self):
-        utilization = subprocess.check_output(
-            ["powershell", r'Get-Counter -Counter "\\brendan-pc\processor(_total)\% processor time"']).decode(
-            'utf-8')
+        utilization = subprocess.check_output(['wmic', 'cpu', 'get', 'LoadPercentage']).decode('utf-8')
 
-        utilization = utilization.split('processor time :')[1].strip()
-        utilization = round(float(utilization) / 2, 2)
+        utilization = utilization.split('LoadPercentage')[1].strip()
+        utilization = int(utilization)
 
         return utilization
 
@@ -81,3 +78,5 @@ class HardwareMonitor(CPU):
 
                 except:
                     pass
+
+            time.sleep(1.5)
